@@ -1,4 +1,4 @@
-export interface Options {
+export type Options = {
   /**
    * Width in pixels to be applied to node before rendering.
    */
@@ -29,6 +29,15 @@ export interface Options {
    * it's children as well.
    */
   filter?: (domNode: HTMLElement) => boolean
+
+  /**
+   * A list of fontfamilies to embed into the svg
+   */
+  fontsToEmbed?: Array<string>
+  /**
+   * use stylenode from document instead of inlining computed styles of every
+   */
+  skipInlineCss?: boolean
   /**
    * A number between `0` and `1` indicating image quality (e.g. 0.92 => 92%)
    * of the JPEG image.

@@ -201,6 +201,7 @@ export async function svgToDataURL(svg: SVGElement): Promise<string> {
 
 export async function nodeToDataURL(
   node: HTMLElement,
+  styleNode: HTMLStyleElement,
   width: number,
   height: number,
 ): Promise<string> {
@@ -218,6 +219,7 @@ export async function nodeToDataURL(
   foreignObject.setAttribute('y', '0')
   foreignObject.setAttribute('externalResourcesRequired', 'true')
 
+  svg.appendChild(styleNode)
   svg.appendChild(foreignObject)
   foreignObject.appendChild(node)
   return svgToDataURL(svg)

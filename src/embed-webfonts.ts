@@ -182,10 +182,32 @@ async function getCSSRules(
   })
 }
 
-function getWebFontRules(cssRules: CSSStyleRule[]): CSSStyleRule[] {
+function getWebFontRules(
+  cssRules: Array<CSSStyleRule>,
+  options: Options,
+): Array<CSSStyleRule> {
   return cssRules
-    .filter((rule) => rule.type === CSSRule.FONT_FACE_RULE)
-    .filter((rule) => shouldEmbed(rule.style.getPropertyValue('src')))
+    .filter((rule) => {
+      if (rule.type !== CSSRule.FONT_FACE_RULE) {
+        return false
+      }
+
+      if (options?.fontsToEmbed === undefined) {
+        return true
+      }
+
+      if (
+        options?.fontsToEmbed?.length > 0 &&
+        options.fontsToEmbed.includes(rule.style.fontFamily)
+      ) {
+        return true
+      }
+
+      return false
+    })
+    .filter((rule) => {
+      return shouldEmbed(rule.style.getPropertyValue('src'))
+    })
 }
 
 async function parseWebFontRules<T extends HTMLElement>(
@@ -199,7 +221,7 @@ async function parseWebFontRules<T extends HTMLElement>(
   const styleSheets = toArray<CSSStyleSheet>(node.ownerDocument.styleSheets)
   const cssRules = await getCSSRules(styleSheets, options)
 
-  return getWebFontRules(cssRules)
+  return getWebFontRules(cssRules, options)
 }
 
 export async function getWebFontCSS<T extends HTMLElement>(

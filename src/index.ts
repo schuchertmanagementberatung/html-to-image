@@ -21,7 +21,28 @@ export async function toSvg<T extends HTMLElement>(
   await embedWebFonts(clonedNode, options)
   await embedImages(clonedNode, options)
   applyStyle(clonedNode, options)
-  const datauri = await nodeToDataURL(clonedNode, width, height)
+
+  const styleNode = document.createElement('style')
+  if (options.skipInlineCss) {
+    const styleSheets = []
+
+    for (let i = 0; i < document.styleSheets.length; i++) {
+      const sheet = document.styleSheets[i]
+
+      if (sheet?.cssRules.length > 0) {
+        for (let j = 0; j < sheet.cssRules.length; j++) {
+          const rule = sheet.cssRules[j]
+          styleSheets.push(rule.cssText)
+        }
+      }
+    }
+
+    const sytleContent = document.createTextNode(styleSheets.join(''))
+
+    styleNode.appendChild(sytleContent)
+  }
+
+  const datauri = await nodeToDataURL(clonedNode, styleNode, width, height)
   return datauri
 }
 
